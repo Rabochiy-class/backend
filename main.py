@@ -4,33 +4,33 @@ import logging.config
 
 from aiogram import Bot, Dispatcher, Router
 from aiogram.filters import Command
-from aiogram.types import Message, InlineKeyboardButton
-from aiogram.types.web_app_info import WebAppInfo
-from aiogram.types.menu_button_web_app import MenuButtonWebApp
-from aiogram.utils.keyboard import InlineKeyboardBuilder
+from aiogram.types import Message, CallbackQuery
 
-from config import TOKEN, LOGGING_CONFIG, WEBAPP_URL
+from config import TOKEN, LOGGING_CONFIG
+from values.strings import menu, faq
+from values.keyboards import keyboard_builder
 
 main_router = Router()
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
 logger = logging.getLogger(__name__)
-web_app = WebAppInfo(url=WEBAPP_URL)
 
 
-@main_router.message(Command("start"))
+@main_router.callback_query()
+async def main_callback_handler(call: CallbackQuery):
+    await bot.send_message(chat_id=call.message.chat.id,
+                           text=faq,
+                           parse_mode='html')
+    await bot.send_message(chat_id=call.message.chat.id,
+                           text=menu,
+                           reply_markup=keyboard_builder.as_markup(),
+                           parse_mode='html')
+
+
+@main_router.message(Command('start'))
 async def start_handler(message: Message):
-    keyboard_builder = InlineKeyboardBuilder()
-    keyboard_builder.row(
-        InlineKeyboardButton(
-            text='Перейти к приложению',
-            web_app=web_app
-        )
-    )
-
-    await message.answer('<b>📍 Меню донора</b>\n\n'
-                         'Чтобы открыть приложение, нажмите на кнопку ниже 🔽',
+    await message.answer(menu,
                          reply_markup=keyboard_builder.as_markup(),
                          parse_mode='html')
 
@@ -46,9 +46,8 @@ async def main():
 
     dp.include_router(main_router)
 
-    await bot.set_chat_menu_button(menu_button=MenuButtonWebApp(text='Открыть приложение', web_app=web_app))
     await dp.start_polling(bot)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     asyncio.run(main())
