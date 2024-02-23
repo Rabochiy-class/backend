@@ -35,6 +35,13 @@ async def start_handler(message: Message):
                          parse_mode='html')
 
 
+@main_router.message()
+async def any_text(message: Message):
+    await message.answer(menu,
+                         reply_markup=keyboard_builder.as_markup(),
+                         parse_mode='html')
+
+
 def setup_loggers():
     logging.config.dictConfig(LOGGING_CONFIG)
 
