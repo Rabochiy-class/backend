@@ -15,8 +15,10 @@ async def start_handler(message: types.Message):
 
 
 async def main():
-    await dp.start_polling()
+    await dp.start_polling(bot)
 
+
+dp.include_router(main_router)
 
 if __name__ == "__main__":
     run(main())
