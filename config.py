@@ -1,5 +1,3 @@
-from logging import DEBUG
-
 TOKEN = '6943843325:AAGW5mdzDAhLANZhJF-MitepOOxw3G1tgFE'
 LOGGING_CONFIG = {
     'version': 1,
