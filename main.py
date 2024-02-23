@@ -19,6 +19,12 @@ logger = logging.getLogger(__name__)
 
 @main_router.callback_query()
 async def main_callback_handler(call: CallbackQuery):
+    """
+    Handles "How to use bot" call.
+    Shows =faq= message and main menu after it.
+    :param call:
+    :return:
+    """
     await bot.send_message(chat_id=call.message.chat.id,
                            text=faq,
                            parse_mode='html')
@@ -30,6 +36,14 @@ async def main_callback_handler(call: CallbackQuery):
 
 @main_router.message(Command('start'))
 async def start_handler(message: Message):
+    """
+    Handling '/start' command. Shows main menu with 3 buttons:
+    - Go to web app
+    - How to use bot
+    - Support
+    :param message:
+    :return:
+    """
     await message.answer(menu,
                          reply_markup=keyboard_builder.as_markup(),
                          parse_mode='html')
@@ -37,6 +51,13 @@ async def start_handler(message: Message):
 
 @main_router.message()
 async def any_text(message: Message):
+    """
+    Handles any text that is not '/start'.
+    Repeats main menu to user until they
+    see the 'how to use' button and press it.
+    :param message:
+    :return:
+    """
     await message.answer(menu,
                          reply_markup=keyboard_builder.as_markup(),
                          parse_mode='html')
@@ -47,6 +68,10 @@ def setup_loggers():
 
 
 async def main():
+    """
+    Sets up logging, starts dispatcher polling.
+    :return:
+    """
     setup_loggers()
 
     logger.info('Starting with Telegram API key %s', TOKEN)

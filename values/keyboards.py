@@ -7,6 +7,12 @@ from config import WEBAPP_URL
 
 web_app = WebAppInfo(url=WEBAPP_URL)
 
+"""
+The main and only keyboard with 3 buttons:
+- Go to web app (opens web app)
+- How to use bot (shows message with instructions)
+- Support (leads to one of the developers' telegram profile)
+"""
 keyboard_builder = InlineKeyboardBuilder()
 keyboard_builder.row(
     InlineKeyboardButton(
