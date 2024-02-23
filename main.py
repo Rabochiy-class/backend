@@ -9,14 +9,14 @@ from aiogram.types.web_app_info import WebAppInfo
 from aiogram.types.menu_button_web_app import MenuButtonWebApp
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from config import TOKEN, LOGGING_CONFIG
+from config import TOKEN, LOGGING_CONFIG, WEBAPP_URL
 
 main_router = Router()
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
 logger = logging.getLogger(__name__)
-web_app = WebAppInfo(url='https://meeting-webapp.netlify.app/login')
+web_app = WebAppInfo(url=WEBAPP_URL)
 
 
 @main_router.message(Command("start"))
