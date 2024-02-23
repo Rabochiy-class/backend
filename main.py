@@ -1,4 +1,4 @@
-import asyncio 
+import asyncio
 import logging
 import logging.config
 
@@ -29,10 +29,15 @@ async def start_handler(message: Message):
         )
     )
 
-    await message.answer('Привет!', reply_markup=keyboard_builder.as_markup())
+    await message.answer('<b>📍 Меню донора</b>\n\n'
+                         'Чтобы открыть приложение, нажмите на кнопку ниже 🔽',
+                         reply_markup=keyboard_builder.as_markup(),
+                         parse_mode='html')
+
 
 def setup_loggers():
     logging.config.dictConfig(LOGGING_CONFIG)
+
 
 async def main():
     setup_loggers()

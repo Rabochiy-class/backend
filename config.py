@@ -1,5 +1,5 @@
 TOKEN = '6943843325:AAGW5mdzDAhLANZhJF-MitepOOxw3G1tgFE'
-WEBAPP_URL = 'https://meeting-webapp.netlify.app/login'
+WEBAPP_URL = 'https://a59c-77-234-205-3.ngrok-free.app/'
 LOGGING_CONFIG = {
     'version': 1,
     'disable_existing_loggers': False,
