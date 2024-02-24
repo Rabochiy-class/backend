@@ -1,5 +1,6 @@
 TOKEN = '6943843325:AAGW5mdzDAhLANZhJF-MitepOOxw3G1tgFE'
-WEBAPP_URL = 'https://a59c-77-234-205-3.ngrok-free.app/'
+WEBAPP_URL = '31.129.45.170:5173'
+PAYMENT_TOKEN = '381764678:TEST:78815'
 LOGGING_CONFIG = {
     'version': 1,
     'disable_existing_loggers': False,

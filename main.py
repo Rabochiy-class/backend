@@ -2,11 +2,12 @@ import asyncio
 import logging
 import logging.config
 
+from aiogram import F
 from aiogram import Bot, Dispatcher, Router
 from aiogram.filters import Command
 from aiogram.types import Message, CallbackQuery, LabeledPrice, PreCheckoutQuery
 
-from config import TOKEN, LOGGING_CONFIG
+from config import TOKEN, LOGGING_CONFIG, PAYMENT_TOKEN
 from values.strings import menu, faq
 from values.keyboards import keyboard_builder
 
@@ -26,7 +27,7 @@ async def order(call: CallbackQuery):
                     'ваши пожертвования направятся на поддержку некоммерческого '
                     'сервиса DonorSearch и его программ.',
         payload='Support DonorSearch',
-        provider_token='381764678:TEST:78815',
+        provider_token=PAYMENT_TOKEN,
         currency='rub',
         prices=[
             LabeledPrice(
@@ -40,17 +41,20 @@ async def order(call: CallbackQuery):
         provider_data=None,
         need_name=True,
         need_phone_number=True,
-        need_email=True
+        need_email=True,
+
     )
 
 
-async def pre_checkout_query(pre_checkout: PreCheckoutQuery):
-    await bot.answer_pre_checkout_query(pre_checkout.id, ok=False)
+@main_router.pre_checkout_query(lambda query: True)
+async def checkout_process(pre_checkout_query: PreCheckoutQuery):
+    await bot.answer_pre_checkout_query(pre_checkout_query.id, ok=True)
 
 
-async def successful_payment(message: Message):
+@main_router.message(F.successful_payment)
+async def successful_payment():
     msg = "Спасибо за помощь!"
-    await message.answer(msg)
+    await bot.send_message(msg)
 
 
 @main_router.callback_query(lambda callback_query: callback_query.data == 'faq')
@@ -88,7 +92,7 @@ async def start_handler(message: Message):
 @main_router.message()
 async def any_text(message: Message):
     """
-    Handles any text that is not '/start'.
+    Handles any text that is not '/start', 'faq', 'support_bot'.
     Repeats main menu to user until they
     see the 'how to use' button and press it.
     :param message:
@@ -113,7 +117,6 @@ async def main():
     logger.info('Starting with Telegram API key %s', TOKEN)
 
     dp.include_router(main_router)
-    dp.pre_checkout_query.register(pre_checkout_query)
 
     await dp.start_polling(bot)
 
