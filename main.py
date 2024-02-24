@@ -4,7 +4,7 @@ import logging.config
 
 from aiogram import Bot, Dispatcher, Router
 from aiogram.filters import Command
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message, CallbackQuery, LabeledPrice, PreCheckoutQuery
 
 from config import TOKEN, LOGGING_CONFIG
 from values.strings import menu, faq
@@ -17,8 +17,44 @@ dp = Dispatcher()
 logger = logging.getLogger(__name__)
 
 
-@main_router.callback_query()
-async def main_callback_handler(call: CallbackQuery):
+@main_router.callback_query(lambda callback_query: callback_query.data == 'support_bot')
+async def order(call: CallbackQuery):
+    await bot.send_invoice(
+        chat_id=call.message.chat.id,
+        title='❤️ Помочь проекту',
+        description='Без людей нет доноров, а без поддержки нет DonorSearch — '
+                    'ваши пожертвования направятся на поддержку некоммерческого '
+                    'сервиса DonorSearch и его программ.',
+        payload='Support DonorSearch',
+        provider_token='381764678:TEST:78815',
+        currency='rub',
+        prices=[
+            LabeledPrice(
+                label='100',
+                amount=10000
+            )
+        ],
+        max_tip_amount=200000,
+        suggested_tip_amounts=[30000, 50000, 100000],
+        start_parameter='donorSearch',
+        provider_data=None,
+        need_name=True,
+        need_phone_number=True,
+        need_email=True
+    )
+
+
+async def pre_checkout_query(pre_checkout: PreCheckoutQuery):
+    await bot.answer_pre_checkout_query(pre_checkout.id, ok=False)
+
+
+async def successful_payment(message: Message):
+    msg = "Спасибо за помощь!"
+    await message.answer(msg)
+
+
+@main_router.callback_query(lambda callback_query: callback_query.data == 'faq')
+async def faq_handler(call: CallbackQuery):
     """
     Handles "How to use bot" call.
     Shows =faq= message and main menu after it.
@@ -77,6 +113,7 @@ async def main():
     logger.info('Starting with Telegram API key %s', TOKEN)
 
     dp.include_router(main_router)
+    dp.pre_checkout_query.register(pre_checkout_query)
 
     await dp.start_polling(bot)
 
