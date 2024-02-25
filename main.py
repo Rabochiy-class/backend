@@ -5,15 +5,17 @@ import logging.config
 from aiogram import F
 from aiogram import Bot, Dispatcher, Router
 from aiogram.filters import Command
-from aiogram.types import Message, CallbackQuery, LabeledPrice, PreCheckoutQuery
+from aiogram.types import Message, CallbackQuery, LabeledPrice, PreCheckoutQuery, MenuButtonWebApp, WebAppInfo
 
-from config import TOKEN, LOGGING_CONFIG, PAYMENT_TOKEN
+from config import TOKEN, LOGGING_CONFIG, PAYMENT_TOKEN, WEBAPP_URL
 from values.strings import menu, faq, donate_description, successful_payment_str
 from values.keyboards import keyboard_builder
 
 main_router = Router()
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
+
+web_app = WebAppInfo(url=WEBAPP_URL)
 
 logger = logging.getLogger(__name__)
 
@@ -133,6 +135,8 @@ async def main():
     logger.info('Starting with Telegram API key %s', TOKEN)
 
     dp.include_router(main_router)
+
+    await bot.set_chat_menu_button(menu_button=MenuButtonWebApp(text='Открыть приложение', web_app=web_app))
 
     await dp.start_polling(bot)
 
