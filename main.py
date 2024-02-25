@@ -8,7 +8,7 @@ from aiogram.filters import Command
 from aiogram.types import Message, CallbackQuery, LabeledPrice, PreCheckoutQuery
 
 from config import TOKEN, LOGGING_CONFIG, PAYMENT_TOKEN
-from values.strings import menu, faq
+from values.strings import menu, faq, donate_description, successful_payment_str
 from values.keyboards import keyboard_builder
 
 main_router = Router()
@@ -20,12 +20,15 @@ logger = logging.getLogger(__name__)
 
 @main_router.callback_query(lambda callback_query: callback_query.data == 'support_bot')
 async def order(call: CallbackQuery):
+    """
+
+    :param call:
+    :return:
+    """
     await bot.send_invoice(
         chat_id=call.message.chat.id,
         title='❤️ Помочь проекту',
-        description='Без людей нет доноров, а без поддержки нет DonorSearch — '
-                    'ваши пожертвования направятся на поддержку некоммерческого '
-                    'сервиса DonorSearch и его программ.',
+        description=donate_description,
         payload='Support DonorSearch',
         provider_token=PAYMENT_TOKEN,
         currency='rub',
@@ -35,8 +38,8 @@ async def order(call: CallbackQuery):
                 amount=10000
             )
         ],
-        max_tip_amount=200000,
-        suggested_tip_amounts=[30000, 50000, 100000],
+        max_tip_amount=90000,
+        suggested_tip_amounts=[30000, 50000, 70000],
         start_parameter='donorSearch',
         provider_data=None,
         need_name=True,
@@ -48,13 +51,25 @@ async def order(call: CallbackQuery):
 
 @main_router.pre_checkout_query(lambda query: True)
 async def checkout_process(pre_checkout_query: PreCheckoutQuery):
+    """
+    A function that is necessary for the end of payment.
+    :param pre_checkout_query:
+    :return:
+    """
     await bot.answer_pre_checkout_query(pre_checkout_query.id, ok=True)
 
 
 @main_router.message(F.successful_payment)
-async def successful_payment():
-    msg = "Спасибо за помощь!"
-    await bot.send_message(msg)
+async def successful_payment(call: CallbackQuery):
+    """
+    A function that is necessary for a successful payment.
+    :return:
+    """
+
+    await call.answer(successful_payment_str, parse_mode='html')
+    await call.answer(text=menu,
+                      reply_markup=keyboard_builder.as_markup(),
+                      parse_mode='html')
 
 
 @main_router.callback_query(lambda callback_query: callback_query.data == 'faq')
