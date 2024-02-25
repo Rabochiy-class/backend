@@ -21,7 +21,8 @@ logger = logging.getLogger(__name__)
 @main_router.callback_query(lambda callback_query: callback_query.data == 'support_bot')
 async def order(call: CallbackQuery):
     """
-
+    Sends invoice with payment settings.
+    Here the user will pay, enter their card information, choose what sum to pay.
     :param call:
     :return:
     """
